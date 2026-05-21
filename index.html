@@ -1,19 +1,323 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Mi primera web</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba de Práctica: Matemáticas 4.º Primaria</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f9;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1 {
+            color: #0275d8;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        p.subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .question-card {
+            background: #fafafa;
+            border: 1px solid #e1e8ed;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        .question-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 15px;
+            white-space: pre-line;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .option-btn {
+            background: white;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            padding: 12px 15px;
+            text-align: left;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover {
+            background: #f0f4f8;
+            border-color: #0275d8;
+        }
+        .correct {
+            background: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724;
+            font-weight: bold;
+        }
+        .incorrect {
+            background: #f8d7da !important;
+            border-color: #dc3545 !important;
+            color: #721c24;
+        }
+        .rationale {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.95em;
+            display: none;
+        }
+        .rationale.correct-info {
+            background-color: #e2f0d9;
+            color: #385723;
+            border-left: 5px solid #28a745;
+        }
+        .rationale.incorrect-info {
+            background-color: #fce4d6;
+            color: #c65911;
+            border-left: 5px solid #dc3545;
+        }
+        .score-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #e9ecef;
+            border-radius: 8px;
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        .reset-btn {
+            display: block;
+            width: 200px;
+            margin: 20px auto 0 auto;
+            padding: 12px;
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .reset-btn:hover {
+            background: #218838;
+        }
+    </style>
 </head>
 <body>
 
-<h1>Hola, esta es mi página web</h1>
-<p>Creada gratis con GitHub Pages</p>
+<div class="container">
+    <h1>📝 Prueba de Competencias Matemáticas</h1>
+    <p class="subtitle">Formato de Evaluación de Diagnóstico (4.º de Primaria)</p>
+    
+    <div id="quiz-wrapper"></div>
 
-<form>
-  <label>Tu nombre:</label>
-  <input type="text" placeholder="Escribe tu nombre">
-  <button type="submit">Enviar</button>
-</form>
+    <div class="score-section">
+        Preguntas respondidas: <span id="answered-count">0</span> / 10
+        <button class="reset-btn" onclick="reiniciarPrueba()">🔄 Reiniciar Prueba</button>
+    </div>
+</div>
+
+<script>
+const quizData = [
+    {
+        num: 1,
+        question: "Situación 1: Fiesta de Cumpleaños\n\nPara celebrar el cumpleaños de Sofía, sus padres van a comprar merienda para los 24 niños invitados. Quieren que cada uno tenga un batido de frutas (2 €) y una porción de tarta (3 €).\n\n¿Cuál es la operación correcta para calcular cuánto dinero costará la merienda de todos?",
+        options: [
+            { text: "Sumar 2 y 3, y luego multiplicar el resultado por 24.", correct: true, feedback: "¡Correcto! Primero calculas la merienda de un niño (2 + 3 = 5 €) y luego lo multiplicas por los 24 niños." },
+            { text: "Multiplicar 24 por 2 y al resultado sumarle 3.", correct: false, feedback: "Incorrecto. Así solo estarías comprando una porción de tarta para un solo niño." },
+            { text: "Sumar 24 más 2 más 3.", correct: false, feedback: "Incorrecto. No se pueden sumar los niños con los euros directamente." },
+            { text: "Multiplicar 24 por 2 por 3.", correct: false, feedback: "Incorrecto. Multiplicar todos los números no resuelve este problema." }
+        ]
+    },
+    {
+        num: 2,
+        question: "Si hay 24 niños en total y se van a sentar en 4 mesas con la misma cantidad de comensales cada una, ¿cuántos niños habrá en cada mesa?",
+        options: [
+            { text: "6 niños por mesa.", correct: true, feedback: "¡Excelente! 24 dividido entre 4 es igual a 6." },
+            { text: "8 niños por mesa.", correct: false, feedback: "Incorrecto. Si fueran 8, necesitarías espacio para 32 niños." },
+            { text: "20 niños por mesa.", correct: false, feedback: "Incorrecto. Has restado 24 - 4, pero hay que repartir (dividir)." },
+            { text: "4 niños por mesa.", correct: false, feedback: "Incorrecto. 4 niños en 4 mesas serían solo 16 niños." }
+        ]
+    },
+    {
+        num: 3,
+        question: "Situación 2: El huerto escolar\n\nEn el huerto, los alumnos plantan tomates en filas siguiendo un patrón:\nFila 1: 12 tomates.\nFila 2: 15 tomates.\nFila 3: 18 tomates.\n\nSi el patrón continúa igual, ¿cuántos tomates plantarán en la quinta (5.ª) fila?",
+        options: [
+            { text: "24 tomates.", correct: true, feedback: "¡Muy bien! El patrón va de +3 en +3. La fila 4 tendrá 21 y la fila 5 tendrá 24." },
+            { text: "21 tomates.", correct: false, feedback: "Incorrecto. Esa sería la cantidad para la cuarta fila." },
+            { text: "27 tomates.", correct: false, feedback: "Incorrecto. Te has pasado una fila, esa sería la sexta." },
+            { text: "20 tomates.", correct: false, feedback: "Incorrecto. No sigue la regla de sumar 3." }
+        ]
+    },
+    {
+        num: 4,
+        question: "Los alumnos guardan las herramientas en cajas. Hay 15 cajas pequeñas donde caben 4 azadas en cada una, y 8 cajas grandes donde caben 6 azadas en cada una. ¿Cuántas azadas se pueden guardar en total?",
+        options: [
+            { text: "108 azadas.", correct: true, feedback: "¡Perfecto! 15 x 4 = 60 en las pequeñas y 8 x 6 = 48 en las grandes. Al sumar 60 + 48 da 108." },
+            { text: "33 azadas.", correct: false, feedback: "Incorrecto. Solo sumaste todos los números del problema sin multiplicar." },
+            { text: "60 azadas.", correct: false, feedback: "Incorrecto. Olvidaste contar las cajas grandes." },
+            { text: "48 azadas.", correct: false, feedback: "Incorrecto. Olvidaste contar las cajas pequeñas." }
+        ]
+    },
+    {
+        num: 5,
+        question: "Situación 3: El álbum de pegatinas\n\nMateo hace una colección. Cada sobre cuesta 2 € y contiene 6 pegatinas. Su abuelo le da 18 €. Si gasta todo el dinero en sobres, ¿cuántas pegatinas conseguirá en total?",
+        options: [
+            { text: "54 pegatinas.", correct: true, feedback: "¡Estupendo! Con 18 € compra 9 sobres (18 ÷ 2). Como cada sobre trae 6 pegatinas: 9 x 6 = 54." },
+            { text: "9 pegatinas.", correct: false, feedback: "Incorrecto. 9 es el número de sobres que puede comprar, no las pegatinas." },
+            { text: "12 pegatinas.", correct: false, feedback: "Incorrecto. Revisa bien las operaciones." },
+            { text: "108 pegatinas.", correct: false, feedback: "Incorrecto. Multiplicaste el dinero por 6, pero recuerda que cada sobre cuesta 2 €." }
+        ]
+    },
+    {
+        num: 6,
+        question: "A Mateo le faltan 15 pegatinas para terminar el álbum. Si en cada sobre vienen 6 pegatinas y tiene la suerte de que ninguna le salga repetida, ¿cuál es el número mínimo de sobres que debe comprar para terminarlo?",
+        options: [
+            { text: "3 sobres.", correct: true, feedback: "¡Correcto! Con 2 sobres tendría 12 (no le alcanza). Necesita el 3.er sobre para llegar a las 15 (le sobrarán 3)." },
+            { text: "2 sobres.", correct: false, feedback: "Incorrecto. Con 2 sobres solo tiene 12 pegatinas y le seguirían faltando 3." },
+            { text: "15 sobres.", correct: false, feedback: "Incorrecto. En cada sobre vienen 6, no una sola." },
+            { text: "4 sobres.", correct: false, feedback: "Incorrecto. Con 4 le alcanza, pero el problema pide el número MÍNIMO de sobres." }
+        ]
+    },
+    {
+        num: 7,
+        question: "Situación 4: Reciclaje\n\nEn el colegio recogieron tapones:\n1.º Primaria: 40 tapones | 2.º Primaria: 35 tapones\n3.º Primaria: 50 tapones | 4.º Primaria: 45 tapones\n\n¿Cuál de las siguientes frases es VERDADERA?",
+        options: [
+            { text: "Entre primero y segundo recogen más tapones que el tercer curso solo.", correct: true, feedback: "¡Exacto! 1.º y 2.º suman 75 tapones (40 + 35), que es más que los 50 de 3.º." },
+            { text: "El curso que más tapones ha recogido es cuarto.", correct: false, feedback: "Incorrecto. El que más recogió fue tercero (50)." },
+            { text: "Segundo de primaria recogió más tapones que primero.", correct: false, feedback: "Incorrecto. Segundo recogió 35 y primero 40." },
+            { text: "Todos los cursos recogieron la misma cantidad.", correct: false, feedback: "Incorrecto. Las cantidades son todas diferentes." }
+        ]
+    },
+    {
+        num: 8,
+        question: "En un saco hay 80 tapones grandes y 20 pequeños. Si metes la mano sin mirar, ¿qué es lo más seguro o probable que pase?",
+        options: [
+            { text: "Lo más probable es que saquemos un tapón grande.", correct: true, feedback: "¡Muy bien! Hay muchos más tapones grandes (80) que pequeños (20), por lo que hay más probabilidad." },
+            { text: "Es seguro que el tapón que saquemos será pequeño.", correct: false, feedback: "Incorrecto. No es seguro porque hay muy poquitos pequeños." },
+            { text: "Es imposible sacar un tapón grande del saco.", correct: false, feedback: "Incorrecto. Al revés, es lo más fácil de sacar." },
+            { text: "Tener un tapón grande o uno pequeño tiene la misma probabilidad.", correct: false, feedback: "Incorrecto. Para eso tendría que haber la misma cantidad de ambos." }
+        ]
+    },
+    {
+        num: 9,
+        question: "Situación 5: El cartel de la clase\n\nUna cartulina rectangular mide 10 centímetros de ancho y 30 centímetros de largo. ¿Qué superficie (área) total tiene la cartulina?",
+        options: [
+            { text: "300 centímetros cuadrados.", correct: true, feedback: "¡Excelente! El área de un rectángulo es el ancho por el largo: 10 x 30 = 300." },
+            { text: "40 centímetros cuadrados.", correct: false, feedback: "Incorrecto. Has sumado los lados en lugar de multiplicarlos." },
+            { text: "80 centímetros cuadrados.", correct: false, feedback: "Incorrecto. Eso sería el contorno (perímetro), no la superficie interior." },
+            { text: "30 centímetros cuadrados.", correct: false, feedback: "Incorrecto. Revisa la fórmula del área." }
+        ]
+    },
+    {
+        num: 10,
+        question: "Para decorar la misma cartulina (10 cm de ancho y 30 cm de largo), quieren pegar una cinta brillante por todo su borde exterior (contorno). ¿Cuántos centímetros de cinta necesitan?",
+        options: [
+            { text: "80 centímetros.", correct: true, feedback: "¡Excelente trabajo! El perímetro es la suma de todos sus lados: 10 + 30 + 10 + 30 = 80 cm." },
+            { text: "40 centímetros.", correct: false, feedback: "Incorrecto. Solo sumaste un ancho y un largo, falta la otra mitad del rectángulo." },
+            { text: "300 centímetros.", correct: false, feedback: "Incorrecto. Eso es el área que calculamos en la pregunta anterior." },
+            { text: "60 centímetros.", correct: false, feedback: "Incorrecto. Revisa la suma de los cuatro lados." }
+        ]
+    }
+];
+
+let respondidas = 0;
+
+function cargarQuiz() {
+    const wrapper = document.getElementById('quiz-wrapper');
+    wrapper.innerHTML = '';
+    respondidas = 0;
+    actualizarContador();
+
+    quizData.forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `qcard-${index}`;
+
+        const qText = document.createElement('div');
+        qText.className = 'question-text';
+        qText.innerText = `${q.num}. ${q.question}`;
+        card.appendChild(qText);
+
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options-container';
+
+        q.options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt.text;
+            btn.onclick = () => verificarRespuesta(index, btn, opt.correct, opt.feedback, optionsDiv);
+            optionsDiv.appendChild(btn);
+        });
+
+        card.appendChild(optionsDiv);
+
+        const rationaleDiv = document.createElement('div');
+        rationaleDiv.className = 'rationale';
+        rationaleDiv.id = `rationale-${index}`;
+        card.appendChild(rationaleDiv);
+
+        wrapper.appendChild(card);
+    });
+}
+
+function verificarRespuesta(qIndex, botonSeleccionado, esCorrecto, mensaje, contenedorOpciones) {
+    // Desactivar todos los botones de esta pregunta para que no cambie de opinión
+    const botones = contenedorOpciones.querySelectorAll('.option-btn');
+    botones.forEach(b => b.disabled = true);
+
+    const rationaleDiv = document.getElementById(`rationale-${qIndex}`);
+    rationaleDiv.innerText = mensaje;
+    rationaleDiv.style.display = 'block';
+
+    if (esCorrecto) {
+        botonSeleccionado.classList.add('correct');
+        rationaleDiv.classList.add('correct-info');
+    } else {
+        botonSeleccionado.classList.add('incorrect');
+        rationaleDiv.classList.add('incorrect-info');
+        
+        // Mostrar también cuál era la correcta para que aprenda
+        botones.forEach((b, i) => {
+            if (quizData[qIndex].options[i].correct) {
+                b.classList.add('correct');
+            }
+        });
+    }
+
+    respondidas++;
+    actualizarContador();
+}
+
+function actualizarContador() {
+    document.getElementById('answered-count').innerText = respondidas;
+}
+
+function reiniciarPrueba() {
+    if (confirm('¿Quieres volver a empezar la prueba desde cero?')) {
+        cargarQuiz();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+}
+
+// Iniciar al cargar la página
+cargarQuiz();
+</script>
 
 </body>
 </html>
