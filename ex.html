@@ -119,6 +119,8 @@
             width: 100%;
             display: inline-block;
         }
+
+        /* --- ELEMENTOS GRÁFICOS RECONSTRUIDOS CON CSS --- */
         
         /* Menú Cafetería */
         .menu-cafeteria {
@@ -174,7 +176,7 @@
             border: 25px solid #666;
             border-radius: 50%;
             position: relative;
-            background: #28a745;
+            background: #28a745; /* Centro verde */
         }
         .calle {
             position: absolute;
@@ -271,6 +273,27 @@
         }
         .barra-etiqueta { font-size: 12px; font-weight: bold; margin-top: 5px; text-align: center;}
 
+        /* Cuadrícula de Simetría */
+        .grid-simetria {
+            display: grid;
+            grid-template-columns: repeat(9, 35px);
+            grid-gap: 2px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .celda {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #999;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .celda.eje { background: #ffcccc; border-left: 2px solid red; border-right: 2px solid red; }
+        .celda.fija { background: #e0e0e0; font-weight: bold; color: black; }
+        .celda select { width: 100%; height: 100%; border: none; text-align: center; font-weight: bold; font-size: 16px; cursor: pointer;}
+
         /* Botón de envío */
         .btn-finalizar {
             display: block;
@@ -288,17 +311,77 @@
         }
         .btn-finalizar:hover { background: #218838; }
 
-        .resultado-pantalla-alumno {
+        .resultado-caja {
             display: none;
-            background: #d4edda;
-            border: 2px solid #c3e6cb;
-            color: #155724;
-            padding: 25px;
-            margin-top: 30px;
+            background: #fff3cd;
+            border: 2px solid #ffeeba;
+            padding: 20px;
+            margin-top: 20px;
             border-radius: 6px;
             text-align: center;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
+        }
+
+        /* BOTÓN OCULTO - Muy discreto */
+        .footer-oculto {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #d0d0d0;
+            font-size: 11px;
+            cursor: pointer;
+            user-select: none;
+            transition: color 0.3s;
+        }
+        .footer-oculto:hover {
+            color: #999;
+        }
+
+        /* Modal de fallos */
+        .modal-fallos {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-contenido {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        .cerrar-modal {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .cerrar-modal:hover {
+            color: #333;
+        }
+        .fallo-item {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+        }
+        .fallo-numero {
+            font-weight: bold;
+            color: #856404;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -312,7 +395,7 @@
         <p><strong>Prueba de Competencias Específicas de Matemáticas</strong></p>
     </div>
 
-    <div class="container" id="contenido-evaluacion">
+    <div class="container">
         
         <div class="seccion-titulo">SITUACIÓN 1: EN BICI AL COLE</div>
         <div class="contexto-caja">
@@ -436,7 +519,7 @@
                 <li><strong>Cesto de 3º Primaria:</strong> 120 petos amarillos, 35 petos azules y 35 petos verdes.</li>
                 <li><strong>Cesto de 4º Primaria:</strong> 120 petos verdes, 35 amarillos y 35 naranjas.</li>
             </ul>
-            <p>Si un alumno mete la mano sin mirar en el cesto y saca un peto al azar, marca si estas afirmaciones son <strong>Verdaderas (V)</strong> o <strong>Falsas (F)</strong>:</p>
+            <p>Si un alumno mete la mano sin mirar en el cesto y saca un peto al azar, marca si estas afirmaciones son <strong>Veraderas (V)</strong> o <strong>Falsas (F)</strong>:</p>
             <table>
                 <thead>
                     <tr>
@@ -498,6 +581,7 @@
                 </tbody>
             </table>
         </div>
+
 
         <div class="seccion-titulo">SITUACIÓN 2: MERCADILLO SOLIDARIO</div>
         <div class="contexto-caja">
@@ -608,127 +692,428 @@
             </table>
         </div>
 
-        <button class="btn-finalizar" onclick="procesarEvaluacionOculta()">Enviar y Finalizar Examen</button>
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 15</span>
+            <p>Han recolectado cápsulas de colores: <strong>325 cápsulas verdes, 436 cápsulas rojas y 783 cápsulas amarillas</strong>. Si cada pendiente individual consume una cápsula, ¿cuántas <strong>parejas (pares) de pendientes del mismo color</strong> pueden formar en total usando todas las cápsulas?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p15" value="A"> A. 771 parejas</label></li>
+                <li><label><input type="radio" name="p15" value="B"> B. 772 parejas</label></li>
+                <li><label><input type="radio" name="p15" value="C"> C. 3088 parejas</label></li>
+                <li><label><input type="radio" name="p15" value="D"> D. 1544 parejas</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 16</span>
+            <p>Para otra tanda de collares de tres colores recogen cápsulas y las registran. El recuento final da: 28 cápsulas rojas, 14 cápsulas rosas y 7 cápsulas negras. Responde Verdadero o Falso a las siguientes conclusiones:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Afirmación</th>
+                        <th>Verdadero (V)</th>
+                        <th>Falso (F)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Se podrán hacer 14 collares como máximo porque hay 14 cápsulas rosas.</td><td><input type="radio" name="p16_1" value="V"></td><td><input type="radio" name="p16_1" value="F"></td></tr>
+                    <tr><td>El número de cápsulas rosas es el doble exactamente que el de cápsulas negras.</td><td><input type="radio" name="p16_2" value="V"></td><td><input type="radio" name="p16_2" value="F"></td></tr>
+                    <tr><td>Si hacemos collares usando una de cada color, sobrarán cápsulas rojas y rosas.</td><td><input type="radio" name="p16_3" value="V"></td><td><input type="radio" name="p16_3" value="F"></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 17</span>
+            <p>Fabricar los 60 collares del puesto les costó a los alumnos un total de <strong>120 € en materiales</strong>. En el mercadillo vendieron absolutamente todos los collares y lograron recaudar un total de <strong>720 € en caja</strong>.</p>
+            <p>¿Cuánto dinero limpio de <strong>beneficio o ganancia</strong> obtuvieron por cada collar individual vendido, una vez descontado el gasto inicial de fabricación?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p17" value="A"> A. 9 € por collar</label></li>
+                <li><label><input type="radio" name="p17" value="B"> B. 10 € por collar</label></li>
+                <li><label><input type="radio" name="p17" value="C"> C. 12 € por collar</label></li>
+                <li><label><input type="radio" name="p17" value="D"> D. 14 € por collar</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 18</span>
+            <p>Al finalizar el mercadillo, el colegio recaudó un gran total de 1800 € para donar. Quieren comprar packs de material compuestos por <strong>un cuento (6 €) y un lápiz (3 €)</strong>. Para saber cuántos packs completos se pueden adquirir con los 1800 €, ¿qué operación es la adecuada?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p18" value="A"> A. Dividir 1800 entre 6 y luego sumarle 3.</label></li>
+                <li><label><input type="radio" name="p18" value="B"> B. Dividir 1800 entre el resultado de sumar 6 + 3.</label></li>
+                <li><label><input type="radio" name="p18" value="C"> C. Multiplicar 1800 por 6 y dividir entre 3.</label></li>
+                <li><label><input type="radio" name="p18" value="D"> D. Sumar 6 y 3, y restárselo a 1800.</label></li>
+            </ul>
+        </div>
+
+
+        <div class="seccion-titulo">SITUACIÓN 3: LA LIGA FEMENINA</div>
+        <div class="contexto-caja">
+            En la clase de 4º de Primaria, los niños y niñas están muy entusiasmados haciendo la colección oficial de cromos de la Liga Femenina de Fútbol de España. Los sobres se adquieren en el quiosco del barrio.
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 19</span>
+            <p>Cada sobre de cromos cuesta exactamente <strong>1 €</strong>. A Omar sus padres le dan una asignación de <strong>12 € al mes</strong> para sus gastos. Él se organiza así: <strong>un tercio (1/3)</strong> lo ahorra, <strong>otro tercio (1/3)</strong> lo gasta en gominolas y el <strong>tercio restante (1/3)</strong> lo usa para comprar sobres de cromos.</p>
+            <p>¿Cuántos sobres de cromos puede comprarse Omar al mes con su presupuesto?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p19" value="A"> A. 2 sobres</label></li>
+                <li><label><input type="radio" name="p19" value="B"> B. 3 sobres</label></li>
+                <li><label><input type="radio" name="p19" value="C"> C. 4 sobres</label></li>
+                <li><label><input type="radio" name="p19" value="D"> D. 5 sobres</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 20</span>
+            <p>Nayla tiene muchos cromos repetidos en su montón. En el recreo, siempre cambia <strong>5 cromos especiales repetidos a cambio de 8 cromos normales</strong> que no tiene. Esta semana llevó al colegio 65 cromos especiales repetidos y consiguió cambiar 15 de ellos.</p>
+            <p>¿Cuántos cromos normales nuevos ha conseguido Nayla con esos 15 especiales cambiados?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p20" value="A"> A. 16 cromos</label></li>
+                <li><label><input type="radio" name="p20" value="B"> B. 24 cromos</label></li>
+                <li><label><input type="radio" name="p20" value="C"> C. 32 cromos</label></li>
+                <li><label><input type="radio" name="p20" value="D"> D. 40 cromos</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 21</span>
+            <p>Daniela tiene la colección casi terminada: <strong>solo le faltan 30 cromos</strong> para completarla. Sabiendo que en cada sobre vienen <strong>8 cromos</strong>, imagina en el mejor de los casos que todos los cromos que compre de ahora en adelante le salen nuevos y no se repiten.</p>
+            <p>¿Cuál es el número mínimo de sobres que tendría que comprar para asegurarse conseguir los 30 cromos restantes?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p21" value="A"> A. 2 sobres</label></li>
+                <li><label><input type="radio" name="p21" value="B"> B. 3 sobres</label></li>
+                <li><label><input type="radio" name="p21" value="C"> C. 4 sobres</label></li>
+                <li><label><input type="radio" name="p21" value="D"> D. 5 sobres</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 22</span>
+            <p>Omar utiliza sus cromos repetidos para decorar la portada de sus cuadernos escolares pegándolos en los bordes para formar un marco rectangular. Ha comprobado que:</p>
+            <ul>
+                <li>Si pone 4 cromos por lado, gasta un número determinado de cromos.</li>
+                <li>Si pone 5 cromos por lado, gasta otra cantidad.</li>
+            </ul>
+            <p>Si quiere formar un marco cuadrado perfecto colocando exactamente <strong>6 cromos en cada uno de los 4 lados</strong>, ¿cuántos cromos necesitará en total teniendo en cuenta que las 4 esquinas se comparten?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p22" value="A"> A. 20 cromos</label></li>
+                <li><label><input type="radio" name="p22" value="B"> B. 24 cromos</label></li>
+                <li><label><input type="radio" name="p22" value="C"> C. 30 cromos</label></li>
+                <li><label><input type="radio" name="p22" value="D"> D. 36 cromos</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 23</span>
+            <p>Nayla ya tiene completadas 4 hojas enteras del álbum y además tiene 20 cromos sueltos que no ha pegado aún. Para poder averiguar **cuántos cromos exactos le faltan para terminar todo el álbum**, evalúa qué datos necesitas obligatoriamente (Verdadero = Se necesita, Falso = No hace falta):</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dato del problema</th>
+                        <th>Verdadero (Se necesita)</th>
+                        <th>Falso (No importa)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Saber el número total de cromos que componen la colección entera.</td><td><input type="radio" name="p23_1" value="V"></td><td><input type="radio" name="p23_1" value="F"></td></tr>
+                    <tr><td>Conocer cuántas casillas de cromos caben en una sola hoja del álbum.</td><td><input type="radio" name="p23_2" value="V"></td><td><input type="radio" name="p23_2" value="F"></td></tr>
+                    <tr><td>Conocer el número exacto de cromos repetidos que tiene guardados Omar.</td><td><input type="radio" name="p23_3" value="V"></td><td><input type="radio" name="p23_3" value="F"></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 24</span>
+            <p>Luis invierte en cromos 12 € al mes y su hermana Marta gasta unos 8 € al mes. Sabiendo que cada sobre vale 1 € y trae 8 cromos, haz una estimación aproximada: ¿Cuántos cromos en total conseguirán juntar entre los dos hermanos al cabo de <strong>dos meses</strong> completos?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p24" value="A"> A. Entre 50 y 140 cromos</label></li>
+                <li><label><input type="radio" name="p24" value="B"> B. Entre 150 y 235 cromos</label></li>
+                <li><label><input type="radio" name="p24" value="C"> C. Entre 245 y 340 cromos</label></li>
+                <li><label><input type="radio" name="p24" value="D"> D. Entre 350 y 425 cromos</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 25</span>
+            <p>Marta quiere proteger y plastificar un póster gigante de fútbol solo por la cara delantera. El póster rectangular mide exactamente <strong>30 cm de ancho y 21 cm de alto</strong>. ¿Qué superficie o área total en centímetros cuadrados (cm²) tiene que plastificar?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p25" value="A"> A. 51 cm²</label></li>
+                <li><label><input type="radio" name="p25" value="B"> B. 102 cm²</label></li>
+                <li><label><input type="radio" name="p25" value="C"> C. 630 cm²</label></li>
+                <li><label><input type="radio" name="p25" value="D"> D. 1260 cm²</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 26</span>
+            <p>Nayla descubrió que los números de serie de los cromos de su primer sobre siguen un patrón de serie numérica constante. Si los números eran: 296, 299, 302, 305, 308, 311, 314, 317... y su segundo sobre continúa exactamente **con el mismo patrón a partir del número 320**, ¿qué números saldrían en este sobre?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p26" value="A"> A. 322 - 325 - 328 - 331 - 334 - 337 - 340 - 343</label></li>
+                <li><label><input type="radio" name="p26" value="B"> B. 323 - 326 - 329 - 332 - 335 - 338 - 341 - 344</label></li>
+                <li><label><input type="radio" name="p26" value="C"> C. 323 - 326 - 329 - 333 - 336 - 339 - 342 - 345</label></li>
+                <li><label><input type="radio" name="p26" value="D"> D. 324 - 327 - 330 - 333 - 336 - 339 - 342 - 345</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 27</span>
+            <p>En el álbum se muestra un gráfico estadístico con las faltas cometidas por 5 países en el mundial. Los datos del gráfico reflejan que el País 1 hizo 21 faltas, el País 2 hizo 120 faltas, el País 3 hizo 75 faltas, el País 4 hizo 75 faltas y el País 5 hizo 45 faltas. ¿Qué opción agrupa estos datos correctamente?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p27" value="A"> A. P1:45, P2:120, P3:75, P4:75, P5:21</label></li>
+                <li><label><input type="radio" name="p27" value="B"> B. P1:75, P2:120, P3:75, P4:45, P5:21</label></li>
+                <li><label><input type="radio" name="p27" value="C"> C. P1:21, P2:120, P3:75, P4:75, P5:45</label></li>
+                <li><label><input type="radio" name="p27" value="D"> D. P1:21, P2:75, P3:45, P4:120, P5:75</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 28 (Juego de Simetría Eje Rojo)</span>
+            <p>Para indicar la formación táctica del equipo contrario, dibuja una estrategia que sea **completamente simétrica** respecto al eje vertical central (marcado en rojo). Selecciona las casillas de la derecha para colocar las "X" que reflejen de forma exacta el patrón de la izquierda:</p>
+            
+            <div class="grid-simetria">
+                <div class="celda fija">X</div><div class="celda"></div><div class="celda"></div><div class="celda"></div>
+                <div class="celda eje">|</div>
+                <div class="celda"><select id="s1"><option value=""></option><option value="X">X</option></select></div><div class="celda"></div><div class="celda"></div><div class="celda"></div>
+                <div class="celda"></div><div class="celda fija">X</div><div class="celda"></div><div class="celda"></div>
+                <div class="celda eje">|</div>
+                <div class="celda"></div><div class="celda"><select id="s2"><option value=""></option><option value="X">X</option></select></div><div class="celda"></div><div class="celda"></div>
+                <div class="celda"></div><div class="celda"></div><div class="celda fija">X</div><div class="celda"></div>
+                <div class="celda eje">|</div>
+                <div class="celda"></div><div class="celda"></div><div class="celda"><select id="s3"><option value=""></option><option value="X">X</option></select></div><div class="celda"></div>
+                <div class="celda fija">X</div><div class="celda fija">X</div><div class="celda"></div><div class="celda"></div>
+                <div class="celda eje">|</div>
+                <div class="celda"></div><div class="celda"></div><div class="celda"><select id="s4_1"><option value=""></option><option value="X">X</option></select></div><div class="celda"><select id="s4_2"><option value=""></option><option value="X">X</option></select></div>
+            </div>
+            <p style="text-align:center; font-size:12px; color:#666;">(Despliega los menús vacíos del lado derecho para colocar la "X" simétrica).</p>
+        </div>
+
+        <button class="btn-finalizar" onclick="corregirExamen()">Terminar Práctica y Ver Nota</button>
+        <div id="resultado" class="resultado-caja"></div>
+
+        <!-- BOTÓN OCULTO - Parece un simple copyright -->
+        <div class="footer-oculto" onclick="mostrarFallos()">
+            © 2024 Consejería de Educación
+        </div>
+
     </div>
 
-    <div class="container resultado-pantalla-alumno" id="caja-alumno">
-        <h2>¡Examen entregado correctamente!</h2>
-        <p>Tus respuestas han sido registradas para su revisión. ¡Buen trabajo!</p>
+    <!-- Modal para mostrar fallos -->
+    <div id="modalFallos" class="modal-fallos" onclick="cerrarModal(event)">
+        <div class="modal-contenido" onclick="event.stopPropagation()">
+            <span class="cerrar-modal" onclick="cerrarModal()">&times;</span>
+            <h2 style="color: #856404; margin-top: 0;">📋 Ejercicios para Repasar</h2>
+            <div id="listaFallos"></div>
+        </div>
     </div>
 
     <script>
-        function procesarEvaluacionOculta() {
-            // Respuestas correctas del simulador
-            const soluciones = {
-                p1: "C",
-                p2_1: "18",
-                p2_2: "15",
-                p3: "B",
-                p4: "C",
-                p5: "D",
-                p6_1: "V", p6_2: "F", p6_3: "F",
-                p7: "B",
-                p8_1: "F", p8_2: "V", p8_3: "V",
-                p9: "C",
-                p10: "B",
-                p11_1: "V", p11_2: "F", p11_3: "F",
-                p12: "C",
-                p13: "D",
-                p14_1: "V", p14_2: "F", p14_3: "F"
-            };
+        // Variable global para guardar los fallos
+        let ejerciciosFallados = [];
 
-            let reporteContenido = "==================================================\n";
-            reporteContenido += "   REPORTE DE EVALUACIÓN DE MATEMÁTICAS - 4º EP   \n";
-            reporteContenido += "==================================================\n\n";
+        function corregirExamen() {
+            let nota = 0;
+            let totalPreguntas = 28;
+            ejerciciosFallados = []; // Resetear fallos
 
-            let correctas = 0;
-            let totales = 0;
+            // P1: C
+            let p1 = document.querySelector('input[name="p1"]:checked');
+            if(p1 && p1.value === "C") nota++;
+            else ejerciciosFallados.push({num: 1, texto: "Cafetería - Operación combinada", correcta: "C"});
 
-            // Función interna para comprobar respuestas de selección única
-            function verificarRadio(nombreId, tituloPregunta) {
-                totales++;
-                const elementos = document.getElementsByName(nombreId);
-                let seleccionada = "No respondida";
-                for (let i = 0; i < elementos.length; i++) {
-                    if (elementos[i].checked) {
-                        seleccionada = elementos[i].value;
-                        break;
-                    }
-                }
-                const esCorrecta = (seleccionada === soluciones[nombreId]);
-                if (esCorrecta) correctas++;
-                
-                reporteContenido += `${tituloPregunta}: ${esCorrecta ? '✓ CORRECTA' : '✗ INCORRECTA'}\n`;
-                reporteContenido += `   - Respuesta del alumno: ${seleccionada}\n`;
-                reporteContenido += `   - Respuesta esperada: ${soluciones[nombreId]}\n\n`;
+            // P2: 18 y 15
+            let p2_1 = document.getElementById('p2_1').value;
+            let p2_2 = document.getElementById('p2_2').value;
+            if(p2_1 == "18" && p2_2 == "15") nota++;
+            else ejerciciosFallados.push({num: 2, texto: "Grupos de ciclistas - División", correcta: "18 y 15"});
+
+            // P3: B (Calle 3 es 180 grados en línea recta)
+            let p3 = document.querySelector('input[name="p3"]:checked');
+            if(p3 && p3.value === "B") nota++;
+            else ejerciciosFallados.push({num: 3, texto: "Glorieta - Ángulo de 180°", correcta: "B (Calle 3)"});
+
+            // P4: C (15 - 5 = 10 min)
+            let p4 = document.querySelector('input[name="p4"]:checked');
+            if(p4 && p4.value === "C") nota++;
+            else ejerciciosFallados.push({num: 4, texto: "Tiempo ahorrado en bici", correcta: "C (10 minutos)"});
+
+            // P5: D (9*5*4*6 = 1080)
+            let p5 = document.querySelector('input[name="p5"]:checked');
+            if(p5 && p5.value === "D") nota++;
+            else ejerciciosFallados.push({num: 5, texto: "Matrícula - Multiplicación", correcta: "D (1080)"});
+
+            // P6: V, F, F
+            let p6_1 = document.querySelector('input[name="p6_1"]:checked');
+            let p6_2 = document.querySelector('input[name="p6_2"]:checked');
+            let p6_3 = document.querySelector('input[name="p6_3"]:checked');
+            if(p6_1 && p6_1.value==="V" && p6_2 && p6_2.value==="F" && p6_3 && p6_3.value==="F") nota++;
+            else ejerciciosFallados.push({num: 6, texto: "Petos - Probabilidad", correcta: "V, F, F"});
+
+            // P7: B (32*4 = 128; 18*5 = 90; 128+90=218)
+            let p7 = document.querySelector('input[name="p7"]:checked');
+            if(p7 && p7.value === "B") nota++;
+            else ejerciciosFallados.push({num: 7, texto: "Aparcamiento bicis - Operaciones", correcta: "B (218)"});
+
+            // P8: V, F, V
+            let p8_1 = document.querySelector('input[name="p8_1"]:checked');
+            let p8_2 = document.querySelector('input[name="p8_2"]:checked');
+            let p8_3 = document.querySelector('input[name="p8_3"]:checked');
+            if(p8_1 && p8_1.value==="V" && p8_2 && p8_2.value==="F" && p8_3 && p8_3.value==="V") nota++;
+            else ejerciciosFallados.push({num: 8, texto: "Gráfico bicicletas - Interpretación", correcta: "V, F, V"});
+
+            // P9: B (Suma simple de los miércoles contados)
+            let p9 = document.querySelector('input[name="p9"]:checked');
+            if(p9 && p9.value === "B") nota++;
+            else ejerciciosFallados.push({num: 9, texto: "Taller miércoles - Suma", correcta: "B"});
+
+            // P10: B (Mitad es 1/2. El resto es 1/2; la mitad de un medio es 1/4)
+            let p10 = document.querySelector('input[name="p10"]:checked');
+            if(p10 && p10.value === "B") nota++;
+            else ejerciciosFallados.push({num: 10, texto: "Reparto fracciones", correcta: "B (1/2, 1/4, 1/4)"});
+
+            // P11: V, V, F
+            let p11_1 = document.querySelector('input[name="p11_1"]:checked');
+            let p11_2 = document.querySelector('input[name="p11_2"]:checked');
+            let p11_3 = document.querySelector('input[name="p11_3"]:checked');
+            if(p11_1 && p11_1.value==="V" && p11_2 && p11_2.value==="V" && p11_3 && p11_3.value==="F") nota++;
+            else ejerciciosFallados.push({num: 11, texto: "Collares chapas - Lógica", correcta: "V, V, F"});
+
+            // P12: C (1 de 80m [75e] + 1 de 40m [59e] = 134 euros. Las demás opciones son más caras)
+            let p12 = document.querySelector('input[name="p12"]:checked');
+            if(p12 && p12.value === "C") nota++;
+            else ejerciciosFallados.push({num: 12, texto: "Compra rollos cinta - Economía", correcta: "C"});
+
+            // P13: D
+            let p13 = document.querySelector('input[name="p13"]:checked');
+            if(p13 && p13.value === "D") nota++;
+            else ejerciciosFallados.push({num: 13, texto: "Cinta verde - Datos necesarios", correcta: "D"});
+
+            // P14: V, F, F
+            let p14_1 = document.querySelector('input[name="p14_1"]:checked');
+            let p14_2 = document.querySelector('input[name="p14_2"]:checked');
+            let p14_3 = document.querySelector('input[name="p14_3"]:checked');
+            if(p14_1 && p14_1.value==="V" && p14_2 && p14_2.value==="F" && p14_3 && p14_3.value==="F") nota++;
+            else ejerciciosFallados.push({num: 14, texto: "Cápsulas café - Probabilidad", correcta: "V, F, F"});
+
+            // P15: A (Mitad de cada color: 162 de verde, 218 de rojo, 391 de amarillo = 771)
+            let p15 = document.querySelector('input[name="p15"]:checked');
+            if(p15 && p15.value === "A") nota++;
+            else ejerciciosFallados.push({num: 15, texto: "Parejas pendientes - División", correcta: "A (771)"});
+
+            // P16: F, V, V
+            let p16_1 = document.querySelector('input[name="p16_1"]:checked');
+            let p16_2 = document.querySelector('input[name="p16_2"]:checked');
+            let p16_3 = document.querySelector('input[name="p16_3"]:checked');
+            if(p16_1 && p16_1.value==="F" && p16_2 && p16_2.value==="V" && p16_3 && p16_3.value==="V") nota++;
+            else ejerciciosFallados.push({num: 16, texto: "Cápsulas collares - Lógica", correcta: "F, V, V"});
+
+            // P17: B (Costó 120, recaudó 720. Ganancia total: 600. Por cada uno: 600/60 = 10)
+            let p17 = document.querySelector('input[name="p17"]:checked');
+            if(p17 && p17.value === "B") nota++;
+            else ejerciciosFallados.push({num: 17, texto: "Beneficio collares", correcta: "B (10€)"});
+
+            // P18: B (1800 / (6+3))
+            let p18 = document.querySelector('input[name="p18"]:checked');
+            if(p18 && p18.value === "B") nota++;
+            else ejerciciosFallados.push({num: 18, texto: "Packs material - Operación", correcta: "B"});
+
+            // P19: C (Un tercio de 12 es 4 euros. Al costar 1 euro cada sobre, compra 4)
+            let p19 = document.querySelector('input[name="p19"]:checked');
+            if(p19 && p19.value === "C") nota++;
+            else ejerciciosFallados.push({num: 19, texto: "Cromos Omar - Fracciones", correcta: "C (4 sobres)"});
+
+            // P20: B (Regla de tres: si 5 valen por 8, entonces 15 valen por 24)
+            let p20 = document.querySelector('input[name="p20"]:checked');
+            if(p20 && p20.value === "B") nota++;
+            else ejerciciosFallados.push({num: 20, texto: "Cambio cromos - Proporcionalidad", correcta: "B (24)"});
+
+            // P21: C (3 sobres = 24 cromos no bastan. Necesita 4 sobres [32 cromos])
+            let p21 = document.querySelector('input[name="p21"]:checked');
+            if(p21 && p21.value === "C") nota++;
+            else ejerciciosFallados.push({num: 21, texto: "Cromos faltantes - Estimación", correcta: "C (4 sobres)"});
+
+            // P22: A (Fórmula del perímetro del marco: 4 * (L - 1) = 4 * 5 = 20)
+            let p22 = document.querySelector('input[name="p22"]:checked');
+            if(p22 && p22.value === "A") nota++;
+            else ejerciciosFallados.push({num: 22, texto: "Marco cromos - Perímetro", correcta: "A (20)"});
+
+            // P23: V, V, F
+            let p23_1 = document.querySelector('input[name="p23_1"]:checked');
+            let p23_2 = document.querySelector('input[name="p23_2"]:checked');
+            let p23_3 = document.querySelector('input[name="p23_3"]:checked');
+            if(p23_1 && p23_1.value==="V" && p23_2 && p23_2.value==="V" && p23_3 && p23_3.value==="F") nota++;
+            else ejerciciosFallados.push({num: 23, texto: "Datos necesarios álbum", correcta: "V, V, F"});
+
+            // P24: C (Dinero total al mes: 20e = 160 cromos. En dos meses: 320 cromos)
+            let p24 = document.querySelector('input[name="p24"]:checked');
+            if(p24 && p24.value === "C") nota++;
+            else ejerciciosFallados.push({num: 24, texto: "Cromos hermanos - Estimación", correcta: "C (245-340)"});
+
+            // P25: C (Área = Ancho * Alto = 30 * 21 = 630 cm²)
+            let p25 = document.querySelector('input[name="p25"]:checked');
+            if(p25 && p25.value === "C") nota++;
+            else ejerciciosFallados.push({num: 25, texto: "Área póster", correcta: "C (630 cm²)"});
+
+            // P26: B (Patrón de +3. Después del 320 va: 323, 326, 329...)
+            let p26 = document.querySelector('input[name="p26"]:checked');
+            if(p26 && p26.value === "B") nota++;
+            else ejerciciosFallados.push({num: 26, texto: "Serie numérica cromos", correcta: "B"});
+
+            // P27: C (P1:21, P2:120, P3:75, P4:75, P5:45)
+            let p27 = document.querySelector('input[name="p27"]:checked');
+            if(p27 && p27.value === "C") nota++;
+            else ejerciciosFallados.push({num: 27, texto: "Faltas mundial - Gráfico", correcta: "C"});
+
+            // P28: Simetría táctica
+            let s1 = document.getElementById('s1').value;
+            let s2 = document.getElementById('s2').value;
+            let s3 = document.getElementById('s3').value;
+            let s4_1 = document.getElementById('s4_1').value;
+            let s4_2 = document.getElementById('s4_2').value;
+            if(s1==="X" && s2==="X" && s3==="X" && s4_1==="X" && s4_2==="X") nota++;
+            else ejerciciosFallados.push({num: 28, texto: "Simetría táctica", correcta: "Todas las X"});
+
+            // Mostrar el resultado en pantalla
+            let resDiv = document.getElementById('resultado');
+            resDiv.style.display = "block";
+            resDiv.innerHTML = "¡Prueba terminada! La puntuación obtenida es: " + nota + " aciertos de un total de " + totalPreguntas + " preguntas.<br>";
+            
+            if(nota >= 22) {
+                resDiv.innerHTML += "<span style='color:green;'>¡Excelente nivel! Estás más que preparado para el examen oficial de Cantabria. 🌟</span>";
+            } else if(nota >= 14) {
+                resDiv.innerHTML += "<span style='color:orange;'>¡Buen intento! Tienes dominada la mayor parte, repasa los pequeños fallos y lo harás genial. 👍</span>";
+            } else {
+                resDiv.innerHTML += "<span style='color:red;'>Sigue practicando un poquito más. Relee los enunciados despacio antes de marcar la respuesta. ¡Tú puedes! 💪</span>";
             }
+            
+            window.scrollTo(0, document.body.scrollHeight);
+        }
 
-            // Función interna para comprobar respuestas de tablas (numéricas)
-            function verificarInput(idElemento, tituloPregunta) {
-                totales++;
-                const valorInput = document.getElementById(idElemento).value.trim();
-                const esCorrecta = (valorInput === soluciones[idElemento]);
-                if (esCorrecta) correctas++;
-
-                reporteContenido += `${tituloPregunta}: ${esCorrecta ? '✓ CORRECTA' : '✗ INCORRECTA'}\n`;
-                reporteContenido += `   - Respuesta del alumno: ${valorInput === "" ? "En blanco" : valorInput}\n`;
-                reporteContenido += `   - Respuesta esperada: ${soluciones[idElemento]}\n\n`;
+        function mostrarFallos() {
+            if(ejerciciosFallados.length === 0) {
+                alert("¡Perfecto! No hay ejercicios fallados. Tu hijo ha acertado todo.");
+                return;
             }
+            
+            let modal = document.getElementById('modalFallos');
+            let lista = document.getElementById('listaFallos');
+            
+            let html = '<p style="color:#666; margin-bottom:20px;">Se han detectado <strong>' + ejerciciosFallados.length + ' ejercicios</strong> que necesitan repaso:</p>';
+            
+            ejerciciosFallados.forEach(function(fallo) {
+                html += '<div class="fallo-item">';
+                html += '<div class="fallo-numero">Pregunta ' + fallo.num + ': ' + fallo.texto + '</div>';
+                html += '<div style="font-size:14px; color:#856404;">Respuesta correcta: ' + fallo.correcta + '</div>';
+                html += '</div>';
+            });
+            
+            lista.innerHTML = html;
+            modal.style.display = 'flex';
+        }
 
-            // Ejecución del análisis ejercicio por ejercicio
-            verificarRadio("p1", "Pregunta 1 (Operación coste de desayunos)");
-            verificarInput("p2_1", "Pregunta 2.1 (Tabla grupos de 36)");
-            verificarInput("p2_2", "Pregunta 2.2 (Tabla grupos de 45)");
-            verificarRadio("p3", "Pregunta 3 (Ángulo de la glorieta)");
-            verificarRadio("p4", "Pregunta 4 (Ahorro de tiempo bici vs andando)");
-            verificarRadio("p5", "Pregunta 5 (Multiplicación cifras de matrícula)");
-            
-            verificarRadio("p6_1", "Pregunta 6.1 (Cesto 3º - Sacar verde)");
-            verificarRadio("p6_2", "Pregunta 6.2 (Cesto 4º - Sacar azul)");
-            verificarRadio("p6_3", "Pregunta 6.3 (Cesto 4º - Imposible naranja)");
-            
-            verificarRadio("p7", "Pregunta 7 (Total bicicletas dos zonas)");
-            
-            verificarRadio("p8_1", "Pregunta 8.1 (Gráfico - Cursos pares > impares)");
-            verificarRadio("p8_2", "Pregunta 8.2 (Gráfico - 1º + 2º > 5º)");
-            verificarRadio("p8_3", "Pregunta 8.3 (Gráfico - 3er ciclo > 1er ciclo)");
-            
-            verificarRadio("p9", "Pregunta 9 (Operación combinada de los miércoles)");
-            verificarRadio("p10", "Pregunta 10 (Fracciones del reparto de tareas)");
-            
-            verificarRadio("p11_1", "Pregunta 11.1 (Propuesta chapas - Variante)");
-            verificarRadio("p11_2", "Pregunta 11.2 (Propuesta chapas - Reparto exacto)");
-            verificarRadio("p11_3", "Pregunta 11.3 (Propuesta chapas - 10 de 8 y 1 de 14)");
-            
-            verificarRadio("p12", "Pregunta 12 (Combinación de rollos más económica)");
-            verificarRadio("p13", "Pregunta 13 (Lógica de metros de cinta verde)");
-            
-            verificarRadio("p14_1", "Pregunta 14.1 (Probabilidad - Nicaragua posible)");
-            verificarRadio("p14_2", "Pregunta 14.2 (Probabilidad - Indonesia seguro)");
-            verificarRadio("p14_3", "Pregunta 14.3 (Probabilidad - Colombia > Indonesia)");
-
-            // Resumen final del archivo
-            let notaFinal = ((correctas / totales) * 10).toFixed(2);
-            let resumenEncabezado = `RESUMEN GENERAL:\n`;
-            resumenEncabezado += `- Aciertos totales: ${correctas} de ${totales} ejercicios.\n`;
-            resumenEncabezado += `- Calificación equivalente: ${notaFinal} / 10\n`;
-            resumenEncabezado += `==================================================\n\n`;
-            
-            reporteContenido = resumenEncabezado + reporteContenido;
-
-            // Generación y descarga silenciosa del archivo .txt con las respuestas
-            const blob = new Blob([reporteContenido], { type: "text/plain;charset=utf-8" });
-            const linkDescarga = document.createElement("a");
-            linkDescarga.href = URL.createObjectURL(blob);
-            linkDescarga.download = "resultados_evaluacion_matematicas.txt";
-            document.body.appendChild(linkDescarga);
-            linkDescarga.click();
-            document.body.removeChild(linkDescarga);
-
-            // Cambiar la vista de la página para que el niño no vea los ejercicios ni la nota
-            document.getElementById("contenido-evaluacion").style.display = "none";
-            document.getElementById("caja-alumno").style.display = "block";
-            window.scrollTo(0, 0);
+        function cerrarModal(event) {
+            if(!event || event.target.id === 'modalFallos' || event.target.className === 'cerrar-modal') {
+                document.getElementById('modalFallos').style.display = 'none';
+            }
         }
     </script>
 </body>
