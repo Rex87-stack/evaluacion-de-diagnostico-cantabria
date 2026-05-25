@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulador Completo - Evaluación de Diagnóstico Matemáticas 4º EP</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #f8f9fa;
+            --accent-color: #28a745;
+            --text-dark: #333;
+            --border-color: #cccccc;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        .header {
+            background-color: #ffffff;
+            border-bottom: 4px solid #cc0000;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            margin: 5px 0;
+            font-size: 24px;
+            color: #000;
+        }
+
+        .header h2 {
+            margin: 5px 0;
+            font-size: 18px;
+            color: #555;
+            font-weight: normal;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        .seccion-titulo {
+            background: #0056b3;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 4px;
+            margin-top: 40px;
+            font-size: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .contexto-caja {
+            background-color: #e9ecef;
+            border-left: 6px solid #0056b3;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+            font-style: italic;
+        }
+
+        .pregunta-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .pregunta-numero {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 18px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .opciones-lista {
+            list-style: none;
+            padding: 0;
+            margin: 15px 0 0 0;
+        }
+
+        .opciones-lista li {
+            margin-bottom: 10px;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 4px;
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        .opciones-lista li:hover {
+            background-color: #f1f5f9;
+        }
+
+        .opciones-lista input[type="radio"] {
+            margin-right: 12px;
+            transform: scale(1.2);
+            vertical-align: middle;
+        }
+
+        .opciones-lista label {
+            cursor: pointer;
+            width: 100%;
+            display: inline-block;
+        }
+
+        /* --- ELEMENTOS GRÁFICOS RECONSTRUIDOS CON CSS --- */
+        
+        /* Menú Cafetería */
+        .menu-cafeteria {
+            border: 2px dashed #8b5a2b;
+            background: #fffdf6;
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .menu-header { text-align: center; font-weight: bold; font-size: 20px; color: #8b5a2b; border-bottom: 2px solid #8b5a2b; padding-bottom: 5px; }
+        .menu-seccion { font-weight: bold; margin-top: 10px; color: #a0522d; text-decoration: underline; }
+        .menu-item { display: flex; justify-content: space-between; margin: 4px 0; }
+        .menu-oferta { text-align: center; background: #ffe4b5; font-weight: bold; padding: 5px; margin-top: 15px; border: 1px solid #daa520; }
+
+        /* Tablas */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        table, th, td {
+            border: 1px solid #aaa;
+        }
+        th {
+            background-color: #f2f2f2;
+            padding: 10px;
+            text-align: left;
+        }
+        td {
+            padding: 10px;
+        }
+        .input-tabla {
+            width: 90%;
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+
+        /* Glorieta Interactiva Visual */
+        .glorieta-contenedor {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .glorieta-anillo {
+            width: 200px;
+            height: 200px;
+            border: 25px solid #666;
+            border-radius: 50%;
+            position: relative;
+            background: #28a745; /* Centro verde */
+        }
+        .calle {
+            position: absolute;
+            background: #666;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .calle-entrada { top: 85px; right: -70px; width: 70px; height: 30px; background: #444; border-left: 3px dashed #fff;}
+        .calle-1 { top: -60px; left: 85px; width: 30px; height: 60px; }
+        .calle-2 { top: -40px; left: 10px; width: 30px; height: 60px; transform: rotate(-45deg); }
+        .calle-3 { top: 85px; left: -60px; width: 60px; height: 30px; }
+        .calle-4 { bottom: -40px; left: 10px; width: 30px; height: 60px; transform: rotate(45deg); }
+        .calle-5 { bottom: -60px; left: 85px; width: 30px; height: 60px; }
+
+        /* Panel de Tiempos Internet */
+        .panel-internet {
+            border: 1px solid #bce1f2;
+            background: #f0f8ff;
+            border-radius: 6px;
+            padding: 15px;
+            max-width: 500px;
+            margin: 20px auto;
+        }
+        .ruta-indicador {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin-top: 15px;
+        }
+        .medio-transporte {
+            background: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 28%;
+        }
+
+        /* Matrícula */
+        .matricula-caja {
+            background: white;
+            border: 3px solid #000;
+            border-radius: 6px;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            width: 220px;
+            padding: 10px;
+            text-align: center;
+            margin: 20px auto;
+            position: relative;
+        }
+        .matricula-caja .bandera {
+            position: absolute;
+            left: 5px; top: 5px; bottom: 5px; width: 25px;
+            background: #003399; color: white; font-size: 10px; font-weight: bold;
+            display: flex; flex-direction: column; justify-content: flex-end; padding-bottom: 2px;
+            border-radius: 2px;
+        }
+        .matricula-num { font-size: 32px; font-weight: bold; letter-spacing: 2px; margin-left: 20px; }
+
+        /* Gráfico de Barras de Bicicletas */
+        .grafico-barras {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            height: 250px;
+            border-left: 2px solid #333;
+            border-bottom: 2px solid #333;
+            margin: 30px 40px;
+            padding-top: 20px;
+            position: relative;
+        }
+        .barra-contenedor {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 14%;
+            height: 100%;
+            justify-content: flex-end;
+        }
+        .barra {
+            width: 80%;
+            background: #a8dadc;
+            border: 1px solid #457b9d;
+            text-align: center;
+            font-weight: bold;
+            color: #1d3557;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            font-size: 11px;
+        }
+        .barra-etiqueta { font-size: 12px; font-weight: bold; margin-top: 5px; text-align: center;}
+
+        /* Cuadrícula de Simetría */
+        .grid-simetria {
+            display: grid;
+            grid-template-columns: repeat(9, 35px);
+            grid-gap: 2px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .celda {
+            width: 35px;
+            height: 35px;
+            border: 1px solid #999;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .celda.eje { background: #ffcccc; border-left: 2px solid red; border-right: 2px solid red; }
+        .celda.fija { background: #e0e0e0; font-weight: bold; color: black; }
+        .celda select { width: 100%; height: 100%; border: none; text-align: center; font-weight: bold; font-size: 16px; cursor: pointer;}
+
+        /* Botón de envío */
+        .btn-finalizar {
+            display: block;
+            width: 100%;
+            background: #28a745;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            padding: 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 40px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .btn-finalizar:hover { background: #218838; }
+
+        .resultado-caja {
+            display: none;
+            background: #fff3cd;
+            border: 2px solid #ffeeba;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='30'><text x='0' y='20' font-family='Arial' font-weight='bold' font-size='12' fill='gray'>CANTABRIA</text></svg>" alt="" style="float: left; max-height: 40px; margin-left: 20px;">
+        <h1>GOBIERNO DE CANTABRIA</h1>
+        <h2>Consejería de Educación, Formación Profesional y Universidades</h2>
+        <h3 style="margin: 5px 0; color: #cc0000;">EVALUACIÓN DE DIAGNÓSTICO — 4º EDUCACIÓN PRIMARIA</h3>
+        <p><strong>Prueba de Competencias Específicas de Matemáticas</strong></p>
+    </div>
+
+    <div class="container">
+        
+        <div class="seccion-titulo">SITUACIÓN 1: EN BICI AL COLE</div>
+        <div class="contexto-caja">
+            Amina y muchos de sus amigos y amigas participan en el proyecto «En bici al cole». Un día a la semana van en bici al colegio. En el trayecto, como Amina es muy curiosa, va descubriendo cosas y haciendo muchos juegos con lo que ve a su alrededor.
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 1</span>
+            <p>De camino al colegio hay una cafetería. Amina y Luis observan la carta e imaginan qué podrían desayunar todos los ciclistas y qué podrían llevar a sus compañeros de clase. Para el desayuno: <strong>son 28 niños y niñas</strong> y les gustaría desayunar <strong>zumo de naranja y ensaimada</strong>.</p>
+            
+            <div class="menu-cafeteria">
+                <div class="menu-header">Menú CAFETERÍA</div>
+                <div class="menu-seccion">Bebidas</div>
+                <div class="menu-item"><span>Café / Cortado / Con Leche</span> <span>2 €</span></div>
+                <div class="menu-item" style="background:#e8f4fd;"><span>Zumo de Naranja</span> <span>3 €</span></div>
+                <div class="menu-item"><span>Batido de Cacao</span> <span>3 €</span></div>
+                <div class="menu-item"><span>Agua (Natural/Gas)</span> <span>1 €</span></div>
+                <div class="menu-seccion">Pastas</div>
+                <div class="menu-item"><span>Bollo de cacao / crema</span> <span>2 €</span></div>
+                <div class="menu-item" style="background:#e8f4fd;"><span>Ensaimada</span> <span>2 €</span></div>
+                <div class="menu-oferta">OFERTA DESAYUNO (Hasta las 12:00): CAFÉ + PASTA = 2€</div>
+            </div>
+
+            <p>¿Cuál es la operación que hay que hacer para calcular lo que tendrían que pagar en total por los 28 desayunos de zumo y ensaimada?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p1" value="A"> A. Sumar 28 más 3 más 2</label></li>
+                <li><label><input type="radio" name="p1" value="B"> B. Multiplicar 3 por 2 por 28</label></li>
+                <li><label><input type="radio" name="p1" value="C"> C. Sumar 3 y 2 y multiplicar el resultado por 28</label></li>
+                <li><label><input type="radio" name="p1" value="D"> D. Multiplicar 28 por 3 y al resultado sumarle 2</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 2</span>
+            <p>Los ciclistas se organizan por grupos con el mismo número de niños y niñas. Con cada grupo va un adulto de referencia. Por ejemplo, si son 30 escolares y 2 adultos, se hacen dos grupos de 15, cada uno con un adulto. <strong>Completa los datos que faltan en la tabla:</strong></p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Número de escolares</th>
+                        <th>Número de adultos (Grupos)</th>
+                        <th>Número de niños y niñas por grupo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>30</td><td>2</td><td>15</td></tr>
+                    <tr><td>40</td><td>4</td><td>10</td></tr>
+                    <tr><td>36</td><td>2</td><td><input type="number" class="input-tabla" id="p2_1" placeholder="Escribe aquí..."></td></tr>
+                    <tr><td>45</td><td>3</td><td><input type="number" class="input-tabla" id="p2_2" placeholder="Escribe aquí..."></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 3</span>
+            <p>El camino al colegio es bastante recto. Sin embargo, encuentran una glorieta en la que tienen que salir por la calle que forma un ángulo de <strong>180°</strong> con la calle por la que llegan. Si entran por donde indica la gran flecha negra, ¿qué calle deben tomar?</p>
+            
+            <div class="glorieta-contenedor">
+                <div style="font-weight:bold; margin-right:20px; color:red; font-size:20px;">➔ ENTRADA</div>
+                <div class="glorieta-anillo">
+                    <div class="calle calle-entrada">ENTRA</div>
+                    <div class="calle calle-1" style="top:-40px; left:85px;">Calle 1</div>
+                    <div class="calle calle-2">Calle 2</div>
+                    <div class="calle calle-3">Calle 3</div>
+                    <div class="calle calle-4">Calle 4</div>
+                    <div class="calle calle-5" style="bottom:-40px; left:85px;">Calle 5</div>
+                </div>
+            </div>
+
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p3" value="A"> A. Calle 2</label></li>
+                <li><label><input type="radio" name="p3" value="B"> B. Calle 3</label></li>
+                <li><label><input type="radio" name="p3" value="C"> C. Calle 4</label></li>
+                <li><label><input type="radio" name="p3" value="D"> D. Calle 5</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 4</span>
+            <p>A Amina le gusta ir al colegio de la manera más ecológica: andando. Pero consulta una aplicación en internet para ver los tiempos de las rutas y ver cuánto tarda en comparación con la bici:</p>
+            
+            <div class="panel-internet">
+                <div style="text-align:center; font-weight:bold; border-bottom:1px solid #ccc; padding-bottom:5px;">RUTA: TU CASA ➔ COLEGIO</div>
+                <div class="ruta-indicador">
+                    <div class="medio-transporte">🚌 Autobús<br><strong>14 min</strong></div>
+                    <div class="medio-transporte" style="background:#fff3cd;">🚶 Andando<br><strong>15 min</strong></div>
+                    <div class="medio-transporte" style="background:#d4edda;">🚲 En Bici<br><strong>5 min</strong></div>
+                </div>
+            </div>
+
+            <p>¿Cuánto tiempo se <strong>ahorra</strong> Amina cuando decide ir en bici en lugar de ir andando?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p4" value="A"> A. 5 minutos</label></li>
+                <li><label><input type="radio" name="p4" value="B"> B. 9 minutos</label></li>
+                <li><label><input type="radio" name="p4" value="C"> C. 10 minutos</label></li>
+                <li><label><input type="radio" name="p4" value="D"> D. 15 minutos</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 5</span>
+            <p>Luis y Amina juegan con las matrículas de los coches. El juego consiste en elegir una matrícula y conseguir el número más alto <strong>multiplicando todas sus cifras entre sí</strong>. Luis ha elegido la siguiente matrícula:</p>
+            
+            <div class="matricula-caja">
+                <div class="bandera"><div>E</div></div>
+                <div class="matricula-num">9546 DPD</div>
+            </div>
+
+            <p>¿Qué número obtiene Luis al multiplicar sus cifras (9 × 5 × 4 × 6)?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p5" value="A"> A. 5184</label></li>
+                <li><label><input type="radio" name="p5" value="B"> B. 4371</label></li>
+                <li><label><input type="radio" name="p5" value="C"> C. 2636</label></li>
+                <li><label><input type="radio" name="p5" value="D"> D. 1080</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 6</span>
+            <p>Al llegar al colegio, guardan los petos de seguridad reflectantes en los cestos de su curso. El reparto de petos guardados es el siguiente:</p>
+            <ul>
+                <li><strong>Cesto de 3º Primaria:</strong> 120 petos amarillos, 35 petos azules y 35 petos verdes.</li>
+                <li><strong>Cesto de 4º Primaria:</strong> 120 petos verdes, 35 amarillos y 35 naranjas.</li>
+            </ul>
+            <p>Si un alumno mete la mano sin mirar en el cesto y saca un peto al azar, marca si estas afirmaciones son <strong>Veraderas (V)</strong> o <strong>Falsas (F)</strong>:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Afirmación</th>
+                        <th>Verdadero (V)</th>
+                        <th>Falso (F)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>En el cesto de tercero es posible sacar un peto verde.</td><td><input type="radio" name="p6_1" value="V"></td><td><input type="radio" name="p6_1" value="F"></td></tr>
+                    <tr><td>En el cesto de cuarto es posible sacar un peto azul.</td><td><input type="radio" name="p6_2" value="V"></td><td><input type="radio" name="p6_2" value="F"></td></tr>
+                    <tr><td>Es imposible sacar un peto naranja del cesto de 4º de primaria.</td><td><input type="radio" name="p6_3" value="V"></td><td><input type="radio" name="p6_3" value="F"></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 7</span>
+            <p>En el colegio hay dos zonas para aparcar las bicicletas: una techada y otra al aire libre sin techar.</p>
+            <ul>
+                <li>En la <strong>zona techada</strong> hay 32 soportes con capacidad para 4 bicis cada uno.</li>
+                <li>En la <strong>zona no techada</strong> hay 18 soportes con capacidad para 5 bicis cada uno.</li>
+            </ul>
+            <p>¿Cuántas bicicletas caben en total combinando ambas zonas?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p7" value="A"> A. 59 bicicletas</label></li>
+                <li><label><input type="radio" name="p7" value="B"> B. 218 bicicletas</label></li>
+                <li><label><input type="radio" name="p7" value="C"> C. 250 bicicletas</label></li>
+                <li><label><input type="radio" name="p7" value="D"> D. 450 bicicletas</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 8</span>
+            <p>El coordinador del proyecto apunta en este gráfico el número total de niños y niñas que van en bicicleta según su nivel educativo:</p>
+            
+            <div class="grafico-barras">
+                <div class="barra-contenedor"><div class="barra" style="height: 55%;">15</div><div class="barra-etiqueta">1º EP<br>(1er C.)</div></div>
+                <div class="barra-contenedor"><div class="barra" style="height: 44%;">12</div><div class="barra-etiqueta">2º EP<br>(1er C.)</div></div>
+                <div class="barra-contenedor"><div class="barra" style="height: 66%;">18</div><div class="barra-etiqueta">3º EP<br>(2º C.)</div></div>
+                <div class="barra-contenedor"><div class="barra" style="height: 77%;">21</div><div class="barra-etiqueta">4º EP<br>(2º C.)</div></div>
+                <div class="barra-contenedor"><div class="barra" style="height: 88%;">24</div><div class="barra-etiqueta">5º EP<br>(3er C.)</div></div>
+                <div class="barra-contenedor"><div class="barra" style="height: 77%;">21</div><div class="barra-etiqueta">6º EP<br>(3er C.)</div></div>
+            </div>
+
+            <p>Observa el gráfico detenidamente y responde Verdadero o Falso:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Afirmación</th>
+                        <th>Verdadero (V)</th>
+                        <th>Falso (F)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Los participantes de los cursos pares superan en número total a los de los cursos impares.</td><td><input type="radio" name="p8_1" value="V"></td><td><input type="radio" name="p8_1" value="F"></td></tr>
+                    <tr><td>Entre 1º y 2º de Primaria juntos suman más alumnos participantes que los que hay en 5º de Primaria.</td><td><input type="radio" name="p8_2" value="V"></td><td><input type="radio" name="p8_2" value="F"></td></tr>
+                    <tr><td>Participan más alumnos del Tercer Ciclo (5º y 6º) que del Primer Ciclo (1º y 2º).</td><td><input type="radio" name="p8_3" value="V"></td><td><input type="radio" name="p8_3" value="F"></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+
+        <div class="seccion-titulo">SITUACIÓN 2: MERCADILLO SOLIDARIO</div>
+        <div class="contexto-caja">
+            En el colegio de Omar, todos los años organizan un mercadillo solidario con productos artesanales fabricados por ellos mismos usando materiales reciclados. Este año el mercadillo se celebrará el día 16 de mayo.
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 9</span>
+            <p>Los alumnos de 4º harán un taller artesanal para fabricar collares y pulseras. Dedicarán a ello una sesión <strong>todos los miércoles</strong> desde la primera semana de octubre hasta el día del mercadillo (16 de mayo), descontando los días de vacaciones. Tras contar los miércoles útiles en el calendario escolar, ven que hay:</p>
+            <ul>
+                <li>Octubre: 5 miércoles | Noviembre: 4 miércoles | Diciembre: 3 miércoles</li>
+                <li>Enero: 4 miércoles | Febrero: 4 miércoles | Marzo: 4 miércoles | Abril: 5 miércoles</li>
+            </ul>
+            <p>¿Qué operación combinada representa correctamente el cálculo para obtener la suma total de esos días de taller?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p9" value="A"> A. 4 × 7 + 1</label></li>
+                <li><label><input type="radio" name="p9" value="B"> B. 5 + 4 + 3 + 4 + 4 + 4 + 5</label></li>
+                <li><label><input type="radio" name="p9" value="C"> C. 5 × 2 + 4 × 4 + 3 + 2</label></li>
+                <li><label><input type="radio" name="p9" value="D"> D. 5 × 2 + 4 × 3 + 3 × 2</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 10</span>
+            <p>Para repartir el trabajo de las artesanías, la clase se organiza así: <strong>la mitad (1/2) de la clase</strong> se dedicará a fabricar pendientes. Del resto de alumnos que quedan libres, la mitad hará pulseras y la otra mitad collares.</p>
+            <p>¿Qué opción de fracciones representa correctamente la organización total de las tareas de la clase?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p10" value="A"> A. 1/2 pendientes, 1/2 pulseras, 1/2 collares</label></li>
+                <li><label><input type="radio" name="p10" value="B"> B. 1/2 pendientes, 1/4 pulseras, 1/4 collares</label></li>
+                <li><label><input type="radio" name="p10" value="C"> C. 1/2 pendientes, 1/3 pulseras, 1/3 collares</label></li>
+                <li><label><input type="radio" name="p10" value="D"> D. 1/3 pendientes, 1/3 pulseras, 1/4 collares</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 11</span>
+            <p>Para armar los collares ecológicos se deben cumplir estas condiciones por equipo:</p>
+            <ul>
+                <li>Cada collar debe llevar como mínimo 10 chapas metálicas de refresco.</li>
+                <li>Cada equipo dispone de un total de <strong>216 chapas</strong> y deben gastarlas todas.</li>
+                <li>Cada equipo tiene la obligación de fabricar exactamente <strong>12 collares</strong>.</li>
+            </ul>
+            <p>Indica si las siguientes propuestas de fabricación por parte de los equipos son verdaderas o falsas:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Propuesta del equipo</th>
+                        <th>Verdadero (V)</th>
+                        <th>Falso (F)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>"Podemos fabricar 8 collares de 20 chapas, 2 collares de 16 chapas y 2 collares de 12 chapas."</td><td><input type="radio" name="p11_1" value="V"></td><td><input type="radio" name="p11_1" value="F"></td></tr>
+                    <tr><td>"Podemos fabricar los 12 collares con exactamente 16 chapas cada uno."</td><td><input type="radio" name="p11_2" value="V"></td><td><input type="radio" name="p11_2" value="F"></td></tr>
+                    <tr><td>"Podemos fabricar 10 collares de 8 chapas y 1 de 14 chapas."</td><td><input type="radio" name="p11_3" value="V"></td><td><input type="radio" name="p11_3" value="F"></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 12</span>
+            <p>El equipo encargado de montar los collares necesita comprar un total de <strong>120 metros de cinta</strong> para ensartar las chapas. En la tienda venden los rollos con los siguientes precios:</p>
+            <ul>
+                <li>1 rollo suelto de 20 metros sueltos cuesta <strong>31 €</strong></li>
+                <li>1 rollo suelto de 40 metros sueltos cuesta <strong>59 €</strong></li>
+                <li>1 rollo suelto de 80 metros sueltos cuesta <strong>75 €</strong></li>
+            </ul>
+            <p>¿Qué combinación de rollos deben comprar para llevarse los 120 metros gastando el <strong>mínimo dinero posible</strong> (la opción más económica)?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p12" value="A"> A. Compra 3 rollos de 40 metros.</label></li>
+                <li><label><input type="radio" name="p12" value="B"> B. Compra 6 rollos de 20 metros.</label></li>
+                <li><label><input type="radio" name="p12" value="C"> C. Compra 1 rollo de 80 metros y 1 rollo de 40 metros.</label></li>
+                <li><label><input type="radio" name="p12" value="D"> D. Compra 1 rollo de 80 metros y 2 rollos de 20 metros.</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 13</span>
+            <p>Van a fabricar 60 collares en total, repartidos a partes iguales por tamaño (Grandes y Pequeños) y por color (Verde y Amarillo). Se sabe que los collares grandes necesitan 50 cm de cinta y los pequeños 25 cm. ¿Es posible calcular los metros exactos de cinta verde que se van a necesitar con estos datos?</p>
+            <ul class="opciones-lista">
+                <li><label><input type="radio" name="p13" value="A"> A. No, porque no sabemos el total de metros globales de la tienda.</label></li>
+                <li><label><input type="radio" name="p13" value="B"> B. Sí, porque solo hay que dividir 60 collares entre los dos colores directamente.</label></li>
+                <li><label><input type="radio" name="p13" value="C"> C. No, porque no sabemos el número exacto de collares para adultos.</label></li>
+                <li><label><input type="radio" name="p13" value="D"> D. Sí, porque se puede calcular cuántos collares hay de cada tipo y color, y multiplicar por sus cm.</label></li>
+            </ul>
+        </div>
+
+        <div class="pregunta-card">
+            <span class="pregunta-numero">Pregunta 14</span>
+            <p>El equipo de Amir hace pendientes con cápsulas de café recicladas. En total han reunido en un saco opaco:</p>
+            <ul>
+                <li>2 cápsulas de Nicaragua | 4 cápsulas de India | 5 cápsulas de Colombia | 10 cápsulas de Indonesia</li>
+            </ul>
+            <p>Si meten la mano en el saco y extraen una cápsula a ciegas, evalúa las siguientes afirmaciones (Verdadero o Falso):</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Afirmación sobre la probabilidad</th>
+                        <th>Verdadero (V)</th>
+                        <th>Falso (F)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Es posible que la cápsula extraída sea de café de Nicaragua.</td><td><input type="radio" name="p14_1" value="V"></td><td><input type="radio" name="p14_1" value="F"></td></tr>
+                    <tr><td>Es completamente seguro que la primera cápsula que saquen sea de Indonesia.</td><td><input type="radio" name="p14_2" value="V"></td><td><input type="radio" name="p14_2" value="F"></td></tr>
+                    <tr><td>Es más probable sacar una cápsula de Colombia que una de Indonesia.</td><td><input type="radio" name="p14_3" value="V"></td><td><input type="radio" name="p14_3" value="F"></td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <button class="btn-finalizar" onclick="evaluarPrueba()">Finalizar Evaluación</button>
+
+        <div class="resultado-caja" id="resultadoCaja"></div>
+
+    </div>
+
+    <script>
+        // Respuestas correctas del examen
+        const respuestasCorrectas = {
+            p1: 'C',
+            p2_1: '18',
+            p2_2: '15',
+            p3: 'B',
+            p4: 'C',
+            p5: 'D',
+            p6_1: 'V',
+            p6_2: 'F',
+            p6_3: 'F',
+            p7: 'B',
+            p8_1: 'F',
+            p8_2: 'V',
+            p8_3: 'V',
+            p9: 'C',
+            p10: 'B',
+            p11_1: 'V',
+            p11_2: 'F',
+            p11_3: 'F',
+            p12: 'C',
+            p13: 'D',
+            p14_1: 'V',
+            p14_2: 'F',
+            p14_3: 'F'
+        };
+
+        function evaluarPrueba() {
+            let aciertos = 0;
+            let totalPreguntas = 14; // El examen tiene 14 bloques de preguntas principales
+            let reportePadre = [];
+
+            // 1. Evaluar Pregunta 1 (Radio)
+            let r1 = document.querySelector('input[name="p1"]:checked');
+            if(r1 && r1.value === respuestasCorrectas.p1) { aciertos++; reportePadre.push("Pregunta 1: ACERTADA"); } 
+            else { reportePadre.push("Pregunta 1: FALLADA (Operaciones combinadas de suma y multiplicación)"); }
+
+            // 2. Evaluar Pregunta 2 (Inputs de Tabla)
+            let r2_1 = document.getElementById('p2_1').value.trim();
+            let r2_2 = document.getElementById('p2_2').value.trim();
+            if(r2_1 === respuestasCorrectas.p2_1 && r2_2 === respuestasCorrectas.p2_2) { aciertos++; reportePadre.push("Pregunta 2: ACERTADA"); }
+            else { reportePadre.push("Pregunta 2: FALLADA (Cálculo de divisiones / repartos en tablas)"); }
+
+            // 3. Evaluar Pregunta 3 (Radio)
+            let r3 = document.querySelector('input[name="p3"]:checked');
+            if(r3 && r3.value === respuestasCorrectas.p3) { aciertos++; reportePadre.push("Pregunta 3: ACERTADA"); }
+            else { reportePadre.push("Pregunta 3: FALLADA (Geometría: Ángulos planos de 180°)"); }
+
+            // 4. Evaluar Pregunta 4 (Radio)
+            let r4 = document.querySelector('input[name="p4"]:checked');
+            if(r4 && r4.value === respuestasCorrectas.p4) { aciertos++; reportePadre.push("Pregunta 4: ACERTADA"); }
+            else { reportePadre.push("Pregunta 4: FALLADA (Problemas de restar e interpretar medidas de tiempo)"); }
+
+            // 5. Evaluar Pregunta 5 (Radio)
+            let r5 = document.querySelector('input[name="p5"]:checked');
+            if(r5 && r5.value === respuestasCorrectas.p5) { aciertos++; reportePadre.push("Pregunta 5: ACERTADA"); }
+            else { reportePadre.push("Pregunta 5: FALLADA (Cálculo mental: Multiplicaciones de varias cifras)"); }
+
+            // 6. Evaluar Pregunta 6 (Tabla Verdadero/Falso)
+            let r6_1 = document.querySelector('input[name="p6_1"]:checked');
+            let r6_2 = document.querySelector('input[name="p6_2"]:checked');
+            let r6_3 = document.querySelector('input[name="p6_3"]:checked');
+            if(r6_1 && r6_1.value === respuestasCorrectas.p6_1 && r6_2 && r6_2.value === respuestasCorrectas.p6_2 && r6_3 && r6_3.value === respuestasCorrectas.p6_3) {
+                aciertos++; reportePadre.push("Pregunta 6: ACERTADA");
+            } else { reportePadre.push("Pregunta 6: FALLADA (Estadística y probabilidad básica: Seguro/Posible/Imposible)"); }
+
+            // 7. Evaluar Pregunta 7 (Radio)
+            let r7 = document.querySelector('input[name="p7"]:checked');
+            if(r7 && r7.value === respuestasCorrectas.p7) { aciertos++; reportePadre.push("Pregunta 7: ACERTADA"); }
+            else { reportePadre.push("Pregunta 7: FALLADA (Problemas matemáticos complejos de dos pasos)"); }
+
+            // 8. Evaluar Pregunta 8 (Tabla Verdadero/Falso)
+            let r8_1 = document.querySelector('input[name="p8_1"]:checked');
+            let r8_2 = document.querySelector('input[name="p8_2"]:checked');
+            let r8_3 = document.querySelector('input[name="p8_3"]:checked');
+            if(r8_1 && r8_1.value === respuestasCorrectas.p8_1 && r8_2 && r8_2.value === respuestasCorrectas.p8_2 && r8_3 && r8_3.value === respuestasCorrectas.p8_3) {
+                aciertos++; reportePadre.push("Pregunta 8: ACERTADA");
+            } else { reportePadre.push("Pregunta 8: FALLADA (Lectura e interpretación de gráficos de barras)"); }
+
+            // 9. Evaluar Pregunta 9 (Radio)
+            let r9 = document.querySelector('input[name="p9"]:checked');
+            if(r9 && r9.value === respuestasCorrectas.p9) { aciertos++; reportePadre.push("Pregunta 9: ACERTADA"); }
+            else { reportePadre.push("Pregunta 9: FALLADA (Representación simbólica de operaciones combinadas)"); }
+
+            // 10. Evaluar Pregunta 10 (Radio)
+            let r10 = document.querySelector('input[name="p10"]:checked');
+            if(r10 && r10.value === respuestasCorrectas.p10) { aciertos++; reportePadre.push("Pregunta 10: ACERTADA"); }
+            else { reportePadre.push("Pregunta 10: FALLADA (Comprensión de fracciones y partes de un todo)"); }
+
+            // 11. Evaluar Pregunta 11 (Tabla Verdadero/Falso)
+            let r11_1 = document.querySelector('input[name="p11_1"]:checked');
+            let r11_2 = document.querySelector('input[name="p11_2"]:checked');
+            let r11_3 = document.querySelector('input[name="p11_3"]:checked');
+            if(r11_1 && r11_1.value === respuestasCorrectas.p11_1 && r11_2 && r11_2.value === respuestasCorrectas.p11_2 && r11_3 && r11_3.value === respuestasCorrectas.p11_3) {
+                aciertos++; reportePadre.push("Pregunta 11: ACERTADA");
+            } else { reportePadre.push("Pregunta 11: FALLADA (Lógica matemática y validación de propuestas cuantitativas)"); }
+
+            // 12. Evaluar Pregunta 12 (Radio)
+            let r12 = document.querySelector('input[name="p12"]:checked');
+            if(r12 && r12.value === respuestasCorrectas.p12) { aciertos++; reportePadre.push("Pregunta 12: ACERTADA"); }
+            else { reportePadre.push("Pregunta 12: FALLADA (Problemas de optimización de costes y medidas)"); }
+
+            // 13. Evaluar Pregunta 13 (Radio)
+            let r13 = document.querySelector('input[name="p13"]:checked');
+            if(r13 && r13.value === respuestasCorrectas.p13) { aciertos++; reportePadre.push("Pregunta 13: ACERTADA"); }
+            else { reportePadre.push("Pregunta 13: FALLADA (Análisis y viabilidad de enunciados de problemas)"); }
+
+            // 14. Evaluar Pregunta 14 (Tabla Verdadero/Falso)
+            let r14_1 = document.querySelector('input[name="p14_1"]:checked');
+            let r14_2 = document.querySelector('input[name="p14_2"]:checked');
+            let r14_3 = document.querySelector('input[name="p14_3"]:checked');
+            if(r14_1 && r14_1.value === respuestasCorrectas.p14_1 && r14_2 && r14_2.value === respuestasCorrectas.p14_2 && r14_3 && r14_3.value === respuestasCorrectas.p14_3) {
+                aciertos++; reportePadre.push("Pregunta 14: ACERTADA");
+            } else { reportePadre.push("Pregunta 14: FALLADA (Cálculo cualitativo de la probabilidad y azar)"); }
+
+
+            // --- MOSTRAR RESULTADOS ---
+
+            // Lo que ve tu hijo en pantalla (Simple, limpio y motivador)
+            const caja = document.getElementById('resultadoCaja');
+            caja.style.display = "block";
+            caja.innerHTML = `<h3>¡Evaluación Finalizada!</h3>
+                              <p style="font-size: 22px; color: #0056b3;">Resultado: <strong>${aciertos} de ${totalPreguntas}</strong> respuestas correctas.</p>
+                              <p style="font-size: 15px; color: #666;">¡Buen trabajo! Sigue practicando para mejorar cada día.</p>`;
+
+            // Lo que ves TÚ (Oculto en la consola de desarrollador)
+            console.clear();
+            console.log("%c--- DIAGNÓSTICO PARA EL PADRE ---", "color: #ff0000; font-size: 16px; font-weight: bold;");
+            console.log(`Resumen global: ${aciertos} correctas de ${totalPreguntas} totales.`);
+            console.log("");
+            reportePadre.forEach(linea => {
+                if(linea.includes("ACERTADA")) {
+                    console.log(`%c✔ ${linea}`, "color: #28a745; font-weight: bold;");
+                } else {
+                    console.log(`%c❌ ${linea}`, "color: #dc3545; font-weight: bold;");
+                }
+            });
+            console.log("%c---------------------------------", "color: #ff0000; font-size: 16px; font-weight: bold;");
+            
+            // Hacer scroll automático hacia el resultado
+            caja.scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
